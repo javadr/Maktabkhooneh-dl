@@ -2,7 +2,7 @@
 
 # Introduction
 
-[Maktabkhooneh](maktabkhooneh.org) is great in preparing *massive open online courses* (MOOC) for Persian user -- gathering its courses from  the best universities of IRAN like [Sharif University of Technology](sharif.edu). Maktabkooneh has started since 2011.
+[Maktabkhooneh](http://maktabkhooneh.org) is great in preparing *massive open online courses* (MOOC) for Persian user -- gathering its courses from  the best universities of IRAN like [Sharif University of Technology](http://sharif.edu). Maktabkooneh has started since 2011.
 
 This script help you to batch download videos for Maktabkhooneh courses.
 In order to have access to the video links of any courses you need an account.
