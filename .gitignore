@@ -1,0 +1,6 @@
+*~
+_cache/
+.cache/
+__pycache__
+geckodriver.log
+urls

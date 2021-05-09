@@ -1,0 +1,6 @@
+rich
+tqdm
+configargparse
+pathlib
+urllib
+selenium
