@@ -26,5 +26,5 @@ Refer to `maktabkhooneh-dl --help` for a complete, up-to-date reference on the r
 Run the script to download the materials by providing your Maktabkhooneh account credentials (e.g. email address and  password), the class names, as well as any additional parameters:
 
 ```python
-coursera-dl -u <user> -p <pass> آموزش-رایگان-تحلیل-هوشمند-تصاویر-زیست-پزشکی-mk1070
+python maktabkhooneh-dl.py -u <user> -p <pass> آموزش-رایگان-تحلیل-هوشمند-تصاویر-زیست-پزشکی-mk1070
 ```
