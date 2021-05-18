@@ -9,18 +9,18 @@ import urllib.parse
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.keys import Keys
 from rich import print
-from tqdm import tqdm
+from rich.progress import track
+
 
 class Course():
-
     def __init__(self, course_name, user, passwd, args):
         self.course_name = course_name
         self.course_url = f"https://maktabkhooneh.org/course/{self.course_name}"
         self.user = user
         self.passwd = passwd
         self.driver = None
-        self.chapter_urls = [] # url for each chapters
-        self.chapter_downloadlinks = [] # download link of the chapter's video
+        self.chapter_urls = []  # url for each chapters
+        self.chapter_downloadlinks = []  # download link of the chapter's video
         self.args = args
 
     def extract(self):
@@ -41,11 +41,11 @@ class Course():
         elem = self.driver.find_element_by_name('tessera')
         elem.send_keys(self.user)
         elem.send_keys(Keys.ENTER)
-        time.sleep(2)
+        time.sleep(3)
         elem = self.driver.find_element_by_name('password')
         elem.send_keys(self.passwd)
         elem.send_keys(Keys.ENTER)
-        time.sleep(2)
+        time.sleep(3)
 
     def _getChapters(self):
         self.chapter_urls = []
@@ -53,14 +53,20 @@ class Course():
             'chapter__unit')
         for i, chapter in enumerate(chapter_units, 1):
             self.chapter_urls.append(chapter.get_attribute("href"))
-            url = urllib.parse.unquote(self.chapter_urls[-1]).replace(self.course_url, '')
+            url = urllib.parse.unquote(self.chapter_urls[-1]).replace(
+                self.course_url, '')
             print(f"[red]Lesson {i:2}[/red]: {url}")
+        print()
 
     def _getChapterLinks(self):
-        for url in tqdm(self.chapters):
+        for i, url in enumerate(
+                track(self.chapters, description="Downloading the URLs ...")):
             self.driver.get(url)
             chapter = self.driver.find_element_by_link_text('دانلود')
             self.chapter_downloadlinks.append(chapter.get_attribute("href"))
+            url = urllib.parse.unquote(self.chapter_urls[i]).replace(
+                self.course_url, '').split('/')[-2]
+            print(f"[red]Lesson {i:2}[/red]: {url}")
             print(self.chapter_downloadlinks[-1])
 
     def _saveChapterLinks(self):

@@ -18,11 +18,10 @@ def main():
 
     #login(session, args.username, args.password)
     course = Course(
-        args.class_name, #e.g. q
+        args.class_name,  #e.g. q
         args.username,
         args.password,
-        args
-    )
+        args)
 
     try:
         _ = course.extract()
@@ -32,7 +31,7 @@ def main():
     finally:
         course.dc()
 
-    print(" DONE! ".center(70, '='))
+    print(" DONE! ".center(80, '='))
 
 
 if __name__ == '__main__':

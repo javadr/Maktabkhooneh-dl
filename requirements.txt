@@ -1,5 +1,4 @@
 rich
-tqdm
 configargparse
 pathlib
 urllib
