@@ -48,6 +48,14 @@ def parse_args(args=None):
         help='maktabkhooneh password')
 
     group_basic.add_argument(
+        '-q',
+        '--quality',
+        dest='quality',
+        action='store',
+        default='H',
+        help='H for high quality and L for low quality video ')
+
+    group_basic.add_argument(
         '--path',
         dest='path',
         action='store',

@@ -62,7 +62,7 @@ class Course():
         for i, url in enumerate(
                 track(self.chapters, description="Downloading the URLs ...")):
             self.driver.get(url)
-            chapter = self.driver.find_element_by_link_text('دانلود')
+            chapter = self.driver.find_elements_by_link_text('دانلود')[0 if self.args.quality=="H" else 1]
             self.chapter_downloadlinks.append(chapter.get_attribute("href"))
             url = urllib.parse.unquote(self.chapter_urls[i]).replace(
                 self.course_url, '').split('/')[-2]
