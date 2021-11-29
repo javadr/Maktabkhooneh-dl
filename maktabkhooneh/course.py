@@ -80,7 +80,7 @@ class Course():
             if i+1 in self.exclude_list:
                 continue
             self.driver.get(url)
-            chapter = self.driver.find_elements_by_link_text('دانلود')[0 if self.args.quality=="H" else 1]
+            chapter = self.driver.find_elements_by_link_text('دانلود')[0 if self.args.quality.upper()=="H" else 1]
             self.chapter_downloadlinks.append(chapter.get_attribute("href"))
             url = urllib.parse.unquote(self.chapter_urls[i]).replace(
                 self.course_url, '').split('/')[-2]
