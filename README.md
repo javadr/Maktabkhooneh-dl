@@ -28,3 +28,12 @@ Run the script to download the materials by providing your Maktabkhooneh account
 ```python
 python maktabkhooneh-dl.py -u <user> -p <pass> آموزش-رایگان-تحلیل-هوشمند-تصاویر-زیست-پزشکی-mk1070
 ```
+
+## Options 
+|short from |long form | description|
+|---|---|---|
+|`-u USERNAME`| `--username USERNAME` | username (email/tel) that you use to login to Maktabkhooneh|
+|`-p PASSWORD` | `--password PASSWORD` |maktabkhooneh password |
+| `-i` |`--interactive` | Interactively asks the user which lesson(s) to download|
+| `-q QUALITY` |`--quality QUALITY`| Download quality of the lesson(s); H for high quality and L for low quality video|
+|| `--path PATH` | Path to where to save the file. (Default: current directory)|

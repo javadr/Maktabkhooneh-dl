@@ -36,7 +36,6 @@ def parse_args(args=None):
         '--username',
         dest='username',
         action='store',
-        default=None,
         help='username (email/tel) that you use to login to Maktabkhooneh')
 
     group_basic.add_argument(
@@ -44,10 +43,17 @@ def parse_args(args=None):
         '--password',
         dest='password',
         action='store',
-        default=None,
         help='maktabkhooneh password')
 
-    group_basic.add_argument(
+    parser.add_argument(
+        '-i',
+        '--interactive',
+        dest='interactive',
+        action='store_true',
+        default=False,
+        help='Interactively asks the user which lesson(s) to download')
+
+    parser.add_argument(
         '-q',
         '--quality',
         dest='quality',
@@ -55,7 +61,7 @@ def parse_args(args=None):
         default='H',
         help='H for high quality and L for low quality video ')
 
-    group_basic.add_argument(
+    parser.add_argument(
         '--path',
         dest='path',
         action='store',
@@ -72,15 +78,13 @@ def parse_args(args=None):
         nargs='?',
         const='axel',
         default=None,
-        help='use axel for downloading,'
-        ' optionally specify axel bin')
+        help='use axel for downloading, optionally specify axel bin')
 
     group_external_dl.add_argument(
         '--downloader-arguments',
         dest='downloader_arguments',
         default='',
-        help='additional arguments passed to the'
-        ' downloader')
+        help='additional arguments passed to the downloader')
 
     parser.add_argument(
         '-o',
@@ -88,8 +92,7 @@ def parse_args(args=None):
         dest='overwrite',
         action='store_true',
         default=False,
-        help='whether existing files should be overwritten'
-        ' (default: False)')
+        help='whether existing files should be overwritten (default: False)')
 
     parser.add_argument(
         '--version',
@@ -101,7 +104,7 @@ def parse_args(args=None):
     # Final parsing of the options
     args = parser.parse_args(args)
 
-    if not args.class_name:
+    if not args.class_name or not args.username or not args.password:
         parser.print_usage()
         sys.exit(1)
 

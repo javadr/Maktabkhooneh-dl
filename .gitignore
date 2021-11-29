@@ -1,4 +1,5 @@
 *~
+.ipy*
 _cache/
 .cache/
 __pycache__
