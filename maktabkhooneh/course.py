@@ -4,13 +4,14 @@
 
 import time
 import subprocess
-import urllib.parse
 
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.keys import Keys
 from rich import print
+from rich import box
 from rich.progress import track
-
+from rich.console import Console
+from rich.table import Table
 
 class Course():
     def __init__(self, course_name, user, passwd, args):
@@ -20,36 +21,39 @@ class Course():
         self.passwd = passwd
         self.driver = None
         self.chapter_urls = []  # url for each chapters
+        self.chapter_titles = [] # title of each chapters
         self.chapter_downloadlinks = []  # download link of the chapter's video
-        self.exclude_list = set() # saves the list of lessons to be excluded
+        self.exclude_list = set()  # saves the list of lessons to be included
         self.args = args
 
     def extract(self):
         self.driver = Firefox()
         self.driver.get(self.course_url)
         self._login()
-        self._getChapters() # gets chapters of the course
-        self._excludeList() # sets the exclude list
-        self._getChapterLinks() # makes the download urls of the inlcluded lesson(s)
+        self._getChapters()  # gets chapters of the course
+        self._getExclusion()  # sets the exclude list
+        self._getChapterLinks()  # makes the download urls of the inlcluded lesson(s)
         if not self.args.axel:
             self._saveChapterLinks()
         else:
             self._saveChapterVideos()
         return self.chapter_downloadlinks
-    def _excludeList(self):
-        getRange = lambda x: set( range(int(x), int(x)+1) if len(x.split('-'))==1
-                        else range(int(x.split('-')[0]), int(x.split('-')[1])+1) )
+
+    def _getExclusion(self):
+        getRange = lambda x: set(range(int(x), int(x) + 1) if len(x.split('-')) == 1 
+                        else range(int(x.split('-')[0]), int(x.split('-')[1]) + 1))
         if not self.args.interactive: return  # there would be no exclusion
-        print('==> Lesson(s) to exclude: (e.g.: "1 2 3", "1-3", "^4"); to download all lessons just press the Enter key')
+        print(
+            '==> Lesson(s) to exclude: (e.g.: "1 2 3", "1-3", "^4"); to download all lessons just press the Enter key'
+        )
         exc = set(input("==> ").strip().split())
-        if exc == set(): return # there would be no exclusion
+        if exc == set(): return  # there would be no exclusion
+
         for item in exc:
-            if '^' in item: continue
-            else: self.exclude_list.update(getRange(item))
-        inc = set() # included via ^ mark
-        for item in exc:
-            if '^'==item[0]: inc.update(getRange(item[1:]))
-        self.exclude_list = self.exclude_list.difference(inc).union(set(range(1,len(self.chapter_urls)+1)).difference(inc))
+            if item[0]=='^': self.exclude_list.update(getRange(item[1:]))
+        self.exclude_list = set(range(1, len(self.chapter_urls) + 1)).difference(self.exclude_list)
+        for item in exc: 
+            if item[0]!='^': self.exclude_list.update(getRange(item))
 
     def _login(self):
         submit = self.driver.find_element_by_class_name('button')
@@ -63,29 +67,36 @@ class Course():
         elem.send_keys(Keys.ENTER)
         time.sleep(3)
 
+    def _makeTable(self, header=True):
+        table = Table(show_header=header, header_style='bold', 
+                    row_styles=["none", "dim"], box=box.DOUBLE,)
+        for col,style,justify in zip( ('Description', 'Lesson'), ('green', 'bold cyan'), ('right', 'center') ):
+            table.add_column(f"[{style}]{col}", style=style, no_wrap=False, justify=justify)
+        return table
+
     def _getChapters(self):
-        self.chapter_urls = []
-        chapter_units = self.driver.find_elements_by_class_name(
-            'chapter__unit')
+        table = self._makeTable()
+        chapter_units = self.driver.find_elements_by_class_name('chapter__unit')
         for i, chapter in enumerate(chapter_units):
             self.chapter_urls.append(chapter.get_attribute("href"))
-            url = urllib.parse.unquote(self.chapter_urls[-1]).replace(
-                self.course_url, '')
-            print(f"[red]Lesson {i+1:2}[/red]: {url}")
+            self.chapter_titles.append(chapter.get_attribute("text").split('"')[0].strip())
+            table.add_row( *(self.chapter_titles[-1], str(i+1)) )
+        Console().print(table)
         print()
 
     def _getChapterLinks(self):
-        for i, url in enumerate(
-                track(self.chapters, description="Downloading the URLs ...")):
-            if i+1 in self.exclude_list:
+        for i in track(range(1, len(self.chapter_urls)+1), description="Downloading the Lesson(s) ..."):
+            table = self._makeTable(False)
+            if i in self.exclude_list: 
                 continue
-            self.driver.get(url)
-            chapter = self.driver.find_elements_by_link_text('دانلود')[0 if self.args.quality.upper()=="H" else 1]
+            self.driver.get(self.chapters[i-1])
+            chapter = self.driver.find_elements_by_link_text(
+                'دانلود')[0 if self.args.quality.upper() == "H" else 1]
             self.chapter_downloadlinks.append(chapter.get_attribute("href"))
-            url = urllib.parse.unquote(self.chapter_urls[i]).replace(
-                self.course_url, '').split('/')[-2]
-            print(f"[red]Lesson {i+1:2}[/red]: {url}")
-            print(self.chapter_downloadlinks[-1])
+            table.add_row( *(str(i), self.chapter_titles[i-1]) )
+            Console().print()
+            Console().print(table)
+            Console().print(self.chapter_downloadlinks[-1])
 
     def _saveChapterLinks(self):
         f = open(f"{self.args.path}/urls", 'w')
