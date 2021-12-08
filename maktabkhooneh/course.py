@@ -4,6 +4,9 @@
 
 import time
 import subprocess
+import requests
+from bs4 import BeautifulSoup
+import os
 
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.keys import Keys
@@ -12,6 +15,13 @@ from rich import box
 from rich.progress import track
 from rich.console import Console
 from rich.table import Table
+
+def clear_screen():
+   # for mac and linux(here, os.name is 'posix')
+   if os.name == 'posix': 
+        _ = os.system('clear')
+   else: # for windows platfrom
+        _ = os.system('cls')
 
 class Course():
     def __init__(self, course_name, user, passwd, args):
@@ -27,6 +37,7 @@ class Course():
         self.args = args
 
     def extract(self):
+        self._showChapters()
         self.driver = Firefox()
         self.driver.get(self.course_url)
         self._login()
@@ -39,16 +50,32 @@ class Course():
             self._saveChapterVideos()
         return self.chapter_downloadlinks
 
+    def _showChapters(self):
+        page = requests.get(self.course_url)
+        if page.status_code != 200:
+            print(f'[red] Course {self.course_url} was not found.[/red]')
+            exit()
+        soup = BeautifulSoup(page.text, 'html.parser')
+        chapters = [ item.get_text().replace('\n','').split('"')[0].strip() 
+                    for item in soup.find_all('a',class_='chapter__unit') ]
+        self._tablular(chapters[:len(chapters)//2])
+        print('Be Patient ...', end='')
+
+
     def _getExclusion(self):
         getRange = lambda x: set(range(int(x), int(x) + 1) if len(x.split('-')) == 1 
                         else range(int(x.split('-')[0]), int(x.split('-')[1]) + 1))
         if not self.args.interactive: return  # there would be no exclusion
         print(
-            '==> Lesson(s) to exclude: (e.g.: "1 2 3", "1-3", "^4"); to download all lessons just press the Enter key'
+            '==> Press the Enter key to download all lessons, Type `end` to exit the application.',
+            '    Lesson(s) to exclude: (e.g.: "1 2 3", "1-3", "^4"),',
+            sep='\n', end=' ' 
         )
-        exc = set(input("==> ").strip().split())
-        if exc == set(): return  # there would be no exclusion
-
+        lineInput = input("==> ").strip().lower()
+        if lineInput == 'end': exit()
+        exc = set(lineInput.strip().lower().split())
+        if exc == set(): 
+            return  # there would be no exclusion
         for item in exc:
             if item[0]=='^': self.exclude_list.update(getRange(item[1:]))
         self.exclude_list = set(range(1, len(self.chapter_urls) + 1)).difference(self.exclude_list)
@@ -67,35 +94,37 @@ class Course():
         elem.send_keys(Keys.ENTER)
         time.sleep(3)
 
-    def _makeTable(self, header=True):
+    def _tablular(self, data, header=True, reverse=False):
+        Console().print()
         table = Table(show_header=header, header_style='bold', 
                     row_styles=["none", "dim"], box=box.DOUBLE,)
         for col,style,justify in zip( ('Description', 'Lesson'), ('green', 'bold cyan'), ('right', 'center') ):
             table.add_column(f"[{style}]{col}", style=style, no_wrap=False, justify=justify)
-        return table
+        for i, row in enumerate(data,1):
+            if reverse: table.add_row( *(str(i), row) )
+            else: table.add_row( *(row, str(i)) )
+        Console().print(table)
+        #print()
+
 
     def _getChapters(self):
-        table = self._makeTable()
+        clear_screen()
         chapter_units = self.driver.find_elements_by_class_name('chapter__unit')
         for i, chapter in enumerate(chapter_units):
             self.chapter_urls.append(chapter.get_attribute("href"))
             self.chapter_titles.append(chapter.get_attribute("text").split('"')[0].strip())
-            table.add_row( *(self.chapter_titles[-1], str(i+1)) )
-        Console().print(table)
-        print()
+        self._tablular(self.chapter_titles)    
+
 
     def _getChapterLinks(self):
         for i in track(range(1, len(self.chapter_urls)+1), description="Downloading the Lesson(s) ..."):
-            table = self._makeTable(False)
             if i in self.exclude_list: 
                 continue
             self.driver.get(self.chapters[i-1])
             chapter = self.driver.find_elements_by_link_text(
                 'دانلود')[0 if self.args.quality.upper() == "H" else 1]
             self.chapter_downloadlinks.append(chapter.get_attribute("href"))
-            table.add_row( *(str(i), self.chapter_titles[i-1]) )
-            Console().print()
-            Console().print(table)
+            self._tablular([self.chapter_titles[i-1],], header=False, reverse=True)
             Console().print(self.chapter_downloadlinks[-1])
 
     def _saveChapterLinks(self):
