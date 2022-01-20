@@ -7,6 +7,7 @@ import subprocess
 import requests
 from bs4 import BeautifulSoup
 import os
+import re
 
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.keys import Keys
@@ -25,7 +26,8 @@ def clear_screen():
 
 class Course():
     def __init__(self, course_name, user, passwd, args):
-        self.course_name = course_name
+        
+        self.course_name = re.sub('http.*://.*?/.*?/','', course_name)
         self.course_url = f"https://maktabkhooneh.org/course/{self.course_name}"
         self.user = user
         self.passwd = passwd
