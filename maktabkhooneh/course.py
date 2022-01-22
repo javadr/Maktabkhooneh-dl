@@ -11,6 +11,7 @@ import re
 
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 from rich import print
 from rich import box
 from rich.progress import track
@@ -85,13 +86,13 @@ class Course():
             if item[0]!='^': self.exclude_list.update(getRange(item))
 
     def _login(self):
-        submit = self.driver.find_element_by_class_name('button')
+        submit = self.driver.find_element(By.CLASS_NAME, 'button')
         submit.click()
-        elem = self.driver.find_element_by_name('tessera')
+        elem = self.driver.find_element(By.NAME, 'tessera')
         elem.send_keys(self.user)
         elem.send_keys(Keys.ENTER)
         time.sleep(2)
-        elem = self.driver.find_element_by_name('password')
+        elem = self.driver.find_element(By.NAME, 'password')
         elem.send_keys(self.passwd)
         elem.send_keys(Keys.ENTER)
         time.sleep(3)
@@ -111,7 +112,7 @@ class Course():
 
     def _getChapters(self):
         clear_screen()
-        chapter_units = self.driver.find_elements_by_class_name('chapter__unit')
+        chapter_units = self.driver.find_elements(By.CLASS_NAME, 'chapter__unit')
         for i, chapter in enumerate(chapter_units):
             self.chapter_urls.append(chapter.get_attribute("href"))
             self.chapter_titles.append(chapter.get_attribute("text").split('"')[0].strip())
@@ -123,7 +124,7 @@ class Course():
             if i in self.exclude_list: 
                 continue
             self.driver.get(self.chapters[i-1])
-            chapter = self.driver.find_elements_by_link_text(
+            chapter = self.driver.find_elements(By.LINK_TEXT,
                 'دانلود')[0 if self.args.quality.upper() == "H" else 1]
             self.chapter_downloadlinks.append(chapter.get_attribute("href"))
             self._tablular([self.chapter_titles[i-1],], header=False, reverse=True)
