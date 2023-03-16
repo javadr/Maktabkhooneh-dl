@@ -19,15 +19,15 @@ from rich.console import Console
 from rich.table import Table
 
 def clear_screen():
-   # for mac and linux(here, os.name is 'posix')
-   if os.name == 'posix': 
-        _ = os.system('clear')
-   else: # for windows platfrom
-        _ = os.system('cls')
+    # for mac and linux(here, os.name is 'posix')
+    if os.name == 'posix':
+        os.system('clear')
+    else: # for windows platfrom
+        os.system('cls')
 
 class Course():
     def __init__(self, course_name, user, passwd, args):
-        
+
         self.course_name = re.sub('http.*://.*?/.*?/','', course_name)
         self.course_url = f"https://maktabkhooneh.org/course/{self.course_name}"
         self.user = user
@@ -59,30 +59,30 @@ class Course():
             print(f'[red] Course {self.course_url} was not found.[/red]')
             exit()
         soup = BeautifulSoup(page.text, 'html.parser')
-        chapters = [ item.get_text().replace('\n','').split('"')[0].strip() 
+        chapters = [ item.get_text().replace('\n','').split('"')[0].strip()
                     for item in soup.find_all('a',class_='chapter__unit') ]
         self._tablular(chapters[:len(chapters)//2])
         print('Be Patient ...', end='')
 
 
     def _getExclusion(self):
-        getRange = lambda x: set(range(int(x), int(x) + 1) if len(x.split('-')) == 1 
+        getRange = lambda x: set(range(int(x), int(x) + 1) if len(x.split('-')) == 1
                         else range(int(x.split('-')[0]), int(x.split('-')[1]) + 1))
         if not self.args.interactive: return  # there would be no exclusion
         print(
             '==> Press the Enter key to download all lessons, Type `end` to exit the application.',
             '    Lesson(s) to exclude: (e.g.: "1 2 3", "1-3", "^4"),',
-            sep='\n', end=' ' 
+            sep='\n', end=' '
         )
         lineInput = input("==> ").strip().lower()
         if lineInput == 'end': exit()
         exc = set(lineInput.strip().lower().split())
-        if exc == set(): 
+        if exc == set():
             return  # there would be no exclusion
         for item in exc:
             if item[0]=='^': self.exclude_list.update(getRange(item[1:]))
         self.exclude_list = set(range(1, len(self.chapter_urls) + 1)).difference(self.exclude_list)
-        for item in exc: 
+        for item in exc:
             if item[0]!='^': self.exclude_list.update(getRange(item))
 
     def _login(self):
@@ -99,7 +99,7 @@ class Course():
 
     def _tablular(self, data, header=True, reverse=False):
         Console().print()
-        table = Table(show_header=header, header_style='bold', 
+        table = Table(show_header=header, header_style='bold',
                     row_styles=["none", "dim"], box=box.DOUBLE,)
         for col,style,justify in zip( ('Description', 'Lesson'), ('green', 'bold cyan'), ('right', 'center') ):
             table.add_column(f"[{style}]{col}", style=style, no_wrap=False, justify=justify)
@@ -116,12 +116,12 @@ class Course():
         for i, chapter in enumerate(chapter_units):
             self.chapter_urls.append(chapter.get_attribute("href"))
             self.chapter_titles.append(chapter.get_attribute("text").split('"')[0].strip())
-        self._tablular(self.chapter_titles)    
+        self._tablular(self.chapter_titles)
 
 
     def _getChapterLinks(self):
         for i in track(range(1, len(self.chapter_urls)+1), description="Downloading the Lesson(s) ..."):
-            if i in self.exclude_list: 
+            if i in self.exclude_list:
                 continue
             self.driver.get(self.chapters[i-1])
             chapter = self.driver.find_elements(By.LINK_TEXT,
