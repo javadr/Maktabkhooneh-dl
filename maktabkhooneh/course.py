@@ -101,11 +101,18 @@ class Course():
         Console().print()
         table = Table(show_header=header, header_style='bold',
                     row_styles=["none", "dim"], box=box.DOUBLE,)
-        for col,style,justify in zip( ('Description', 'Lesson'), ('green', 'bold cyan'), ('right', 'center') ):
-            table.add_column(f"[{style}]{col}", style=style, no_wrap=False, justify=justify)
+        if len(data)>1:
+            for col,style,justify in zip( ('Description', 'Lesson'), ('green', 'bold cyan'), ('right', 'center') ):
+                table.add_column(f"[{style}]{col}", style=style, no_wrap=False, justify=justify)
+        else:
+            table.add_column(f"[green]Description", style='green', no_wrap=False, justify='right')
         for i, row in enumerate(data,1):
-            if reverse: table.add_row( *(str(i), row) )
-            else: table.add_row( *(row, str(i)) )
+            if len(data)>1:
+                if reverse: table.add_row( *(str(i), row) )
+                else: table.add_row( *(row, str(i)) )
+            else: # len(data)==1
+                if reverse: table.add_row( row )
+                else: table.add_row( row )
         Console().print(table)
         #print()
 
