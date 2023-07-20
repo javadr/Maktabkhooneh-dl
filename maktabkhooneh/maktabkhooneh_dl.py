@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
 #
 
 import sys
@@ -10,10 +9,7 @@ from selenium.common import exceptions
 
 
 def main():
-    """
-    Main entry point for execution.
-    """
-
+    """Main entry point for execution."""
     args = parse_args()
 
     #login(session, args.username, args.password)
@@ -31,8 +27,8 @@ def main():
     finally:
         course.dc()
 
-    print(" DONE! ".center(80, '='))
+    print(" DONE! ".center(80, "="))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
