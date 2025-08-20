@@ -1,5 +1,4 @@
-#!/usr/bin/python3
-#
+#!/usr/bin/env python3
 
 import os
 import re
@@ -59,7 +58,7 @@ class Course:
             exit()
         soup = BeautifulSoup(page.text, "html.parser")
         chapters = [ item.get_text().replace("\n","").split('"')[0].strip()
-                    for item in soup.find_all("a",class_="chapter__unit") ]
+                    for item in soup.find_all("span",class_="font-medium ellipsis text-dark flex-1")]
         self._tablular(chapters[:len(chapters)//2])
         print("Be Patient ...", end="")
 
@@ -89,8 +88,9 @@ class Course:
                 self.exclude_list.update(getRange(item))
 
     def _login(self):
-        submit = self.driver.find_element(By.CLASS_NAME, "button")
+        # submit = self.driver.find_element(By.CLASS_NAME, "button")
         # submit = self.driver.find_element(By.CSS_SELECTOR, 'button[id="login"]')
+        submit = self.driver.find_element(By.CSS_SELECTOR, "button#login.button[type='button']")
         submit.click()
         elem = self.driver.find_element(By.NAME, "tessera")
         # elem = self.driver.find_element(By.CSS_SELECTOR, 'input[id="tessera"]')
@@ -131,7 +131,8 @@ class Course:
 
     def _getChapters(self):
         clear_screen()
-        chapter_units = self.driver.find_elements(By.CLASS_NAME, "chapter__unit")
+        # chapter_units = self.driver.find_elements(By.CLASS_NAME, "chapter__unit")
+        chapter_units = self.driver.find_elements(By.CSS_SELECTOR, "span#font-medium ellipsis text-dark flex-1")
         for i, chapter in enumerate(chapter_units):
             self.chapter_urls.append(chapter.get_attribute("href"))
             self.chapter_titles.append(chapter.get_attribute("text").split('"')[0].strip())
