@@ -90,8 +90,10 @@ class Course:
 
     def _login(self):
         submit = self.driver.find_element(By.CLASS_NAME, "button")
+        # submit = self.driver.find_element(By.CSS_SELECTOR, 'button[id="login"]')
         submit.click()
         elem = self.driver.find_element(By.NAME, "tessera")
+        # elem = self.driver.find_element(By.CSS_SELECTOR, 'input[id="tessera"]')
         elem.send_keys(self.user)
         elem.send_keys(Keys.ENTER)
         time.sleep(2)

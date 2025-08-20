@@ -14,10 +14,11 @@ def main():
 
     #login(session, args.username, args.password)
     course = Course(
-        args.class_name,  #e.g. q
+        args.class_name,
         args.username,
         args.password,
-        args)
+        args,
+        )
 
     try:
         _ = course.extract()
