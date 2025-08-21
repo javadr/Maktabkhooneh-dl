@@ -14,6 +14,8 @@ from rich.table import Table
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 def clear_screen():
@@ -59,7 +61,7 @@ class Course:
         soup = BeautifulSoup(page.text, "html.parser")
         chapters = [ item.get_text().replace("\n","").split('"')[0].strip()
                     for item in soup.find_all("span",class_="font-medium ellipsis text-dark flex-1")]
-        self._tablular(chapters[:len(chapters)//2])
+        self._tablular(chapters[:len(chapters)])
         print("Be Patient ...", end="")
 
 
@@ -88,19 +90,25 @@ class Course:
                 self.exclude_list.update(getRange(item))
 
     def _login(self):
-        # submit = self.driver.find_element(By.CLASS_NAME, "button")
-        # submit = self.driver.find_element(By.CSS_SELECTOR, 'button[id="login"]')
-        submit = self.driver.find_element(By.CSS_SELECTOR, "button#login.button[type='button']")
-        submit.click()
-        elem = self.driver.find_element(By.NAME, "tessera")
-        # elem = self.driver.find_element(By.CSS_SELECTOR, 'input[id="tessera"]')
-        elem.send_keys(self.user)
-        elem.send_keys(Keys.ENTER)
-        time.sleep(2)
-        elem = self.driver.find_element(By.NAME, "password")
-        elem.send_keys(self.passwd)
-        elem.send_keys(Keys.ENTER)
-        time.sleep(3)
+        wait = WebDriverWait(self.driver, 15)
+            
+        # Click the login button (top-left)
+        login_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'ورود')]")))
+        login_button.click()
+        
+        # Wait for user form to appear and then Fill in credentials
+        email_input = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="tessera"]')))        
+        email_input.send_keys(self.user)
+
+        ok_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'تایید')]")))
+        ok_button.click()
+
+        # Wait for password form to appear and then Fill in credentials 
+        password_input = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="password"]')))
+        password_input.send_keys(self.passwd)
+        
+        login_submit = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@data-tag='ga-password-submit']")))
+        login_submit.click()
 
     def _tablular(self, data, header=True, reverse=False):
         Console().print()
