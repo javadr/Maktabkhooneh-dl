@@ -1,0 +1,2 @@
+@ 2025-08-25 ver 0.6
+-- Fixed compatibility issues with the latest Maktabkhooneh website update
