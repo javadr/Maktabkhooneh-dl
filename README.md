@@ -1,33 +1,44 @@
 # Maktabkhooneh Downloader
 
-# Introduction
+## Introduction
 
-[Maktabkhooneh](http://maktabkhooneh.org) is great in preparing *massive open online courses* (MOOC) for Persian user -- gathering its courses from  the best universities of IRAN like [Sharif University of Technology](http://sharif.edu). Maktabkooneh has started since 2011.
+[Maktabkhooneh](http://maktabkhooneh.org) provides *massive open online courses* (MOOCs) for Persian users, 
+offering classes from top universities in Iran such as [Sharif University of Technology](http://sharif.edu). 
+Maktabkhooneh has been active since 2011.
 
-This script help you to batch download videos for Maktabkhooneh courses.
-In order to have access to the video links of any courses you need an account.
+This script helps you batch download videos from Maktabkhooneh courses.  
+To access the video links for any course, you must have a Maktabkhooneh account.
 
+---
 
-# Installing dependencies
+## Installing Dependencies
 
-You can use the `pip` program to install the dependencies on your own.  They are all listed in the `requirements.txt` file.
-
-To use this method, you would proceed as:
+Use `pip` to install the required dependencies listed in `requirements.txt`:
 
 ```python
 pip install -r requirements.txt
 ```
 
-To make Firefox work with Python selenium, you need to install the *geckodriver*. The geckodriver driver will start the real firefox browser and supports Javascript.
+To enable Firefox with Selenium, you also need to install *geckodriver*.
+Geckodriver launches the Firefox browser and supports JavaScript.
 
 # Running the script
-Refer to `maktabkhooneh-dl --help` for a complete, up-to-date reference on the runtime options supported by this utility.
 
-Run the script to download the materials by providing your Maktabkhooneh account credentials (e.g. email address and  password), the class names, as well as any additional parameters:
+For a complete and up-to-date list of runtime options, refer to:
+```bash
+maktabkhooneh-dl --help
+```
+
+Run the script by providing your Maktabkhooneh account credentials (email and password), the course name, and any additional parameters:
+
+
 
 ```python
 python maktabkhooneh-dl.py -u <user> -p <pass> آموزش-رایگان-تحلیل-هوشمند-تصاویر-زیست-پزشکی-mk1070
 ```
+
+> **CAVEAT**: Due to a recent update, downloading course materials from Maktabkhooneh now requires prior registration for the course.
+
 ```
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════╦════════╗
