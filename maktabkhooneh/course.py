@@ -5,6 +5,7 @@ import re
 import subprocess
 
 import requests
+import textwrap
 from bs4 import BeautifulSoup
 from rich import box, print
 from rich.console import Console
@@ -146,7 +147,7 @@ class Course:
 
         chapter_units = self.wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a[href*='/ویدیو-']")))
 
-        if len(chapter_units)==0:
+        if len(chapter_units) == 0:
             print("You should register at first in the course in order to have acces to it.")
             exit()
         for i, chapter in enumerate(chapter_units):
@@ -167,7 +168,31 @@ class Course:
 
     def _saveChapterLinks(self):
         with open(f"{self.args.path}/urls", "w") as f:
-            f.write("\n".join(self.chapter_downloadlinks))
+            f.write(
+                "\n".join([url for i, url in enumerate(self.chapter_downloadlinks, 1) if i not in self.exclude_list]),
+            )
+
+        with open(f"{self.args.path}/download.sh", "w+") as f:
+            f.truncate(0)
+        with open(f"{self.args.path}/download.sh", "a+") as f:
+            f.write(
+                textwrap.dedent(r"""#!/usr/bin/env bash
+                set -euo pipefail
+                IFS=$'\n\t'
+
+                # Where to save files
+                mkdir -p "download"
+
+                # axel options (tweak if you like)
+                AXEL_OPTS=(-n 8 -a -c -v)   # 8 connections, alternate display, continue, verbose
+
+                # One command per file (name first, then URL)
+            """),
+            )
+            for i, (url, name) in enumerate(zip(self.chapter_downloadlinks, self.chapter_titles), 1):
+                if i in self.exclude_list:
+                    continue
+                f.write('axel "{}" -o "download/{}.mp4" "{}"\n'.format("${AXEL_OPTS[@]}", name, url))
 
     def _saveChapterVideos(self):
         for href in self.chapters_url:
