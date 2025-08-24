@@ -11,13 +11,13 @@ def main():
     """Main entry point for execution."""
     args = parse_args()
 
-    #login(session, args.username, args.password)
+    # login(session, args.username, args.password)
     course = Course(
         args.class_name,
         args.username,
         args.password,
         args,
-        )
+    )
 
     try:
         _ = course.extract()
