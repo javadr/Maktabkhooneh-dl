@@ -1,3 +1,8 @@
+## [0.8] - 2025-08-26
+### Added
+- Downloader scripts supporting **wget**, **curl**, and **axel**.
+
+
 ## [0.7] - 2025-08-25
 ### Changed
 - Improved progress bar for smoother and clearer updates
