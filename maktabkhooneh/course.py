@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 
+
+
+# Standard library imports
 import os
 import re
 import subprocess
-
 import requests
-import textwrap
+
+# Third-party imports
 from bs4 import BeautifulSoup
 from rich import box, print
 from rich.console import Console
@@ -15,6 +18,13 @@ from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+# Local application imports
+from maktabkhooneh import shell_preampble_axel
+
+
+
+
 
 
 def clear_screen():
@@ -175,20 +185,7 @@ class Course:
         with open(f"{self.args.path}/download.sh", "w+") as f:
             f.truncate(0)
         with open(f"{self.args.path}/download.sh", "a+") as f:
-            f.write(
-                textwrap.dedent(r"""#!/usr/bin/env bash
-                set -euo pipefail
-                IFS=$'\n\t'
-
-                # Where to save files
-                mkdir -p "download"
-
-                # axel options (tweak if you like)
-                AXEL_OPTS=(-n 8 -a -c -v)   # 8 connections, alternate display, continue, verbose
-
-                # One command per file (name first, then URL)
-            """),
-            )
+            f.write(shell_preampble_axel)
             for i, (url, name) in enumerate(zip(self.chapter_downloadlinks, self.chapter_titles), 1):
                 if i in self.exclude_list:
                     continue
