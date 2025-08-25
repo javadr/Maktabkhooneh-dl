@@ -102,7 +102,8 @@ class Course:
         self.exclude_list = set(range(1, len(self.chapter_urls) + 1)).difference(self.exclude_list)
         for item in exc:
             if item[0] != "^":
-                self.exclude_list.update(getRange(item))
+                self.exclude_list.difference_update(getRange(item))
+
 
     def _login(self):
         # Click the login button (top-left)
