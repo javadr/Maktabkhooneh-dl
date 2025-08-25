@@ -21,12 +21,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # Local application imports
-from maktabkhooneh import (
-    shell_preampble,
-    axel_option,
-    wget_option,
-    curl_option,
-) # noqa
+from maktabkhooneh import shell_script
 
 
 def clear_screen():
@@ -188,30 +183,30 @@ class Course:
                 progress.update(task, advance=1)
 
     def _saveChapterLinks(self):
+        # Save all chapter download URLs to a file named 'urls' in the target path,
+        # excluding any chapters listed in self.exclude_list
         with open(f"{self.args.path}/urls", "w") as f:
             f.write(
                 "\n".join([url for i, url in enumerate(self.chapter_downloadlinks, 1) if i not in self.exclude_list]),
             )
 
-        # Helper to write download scripts
-        def write_script(filename: str, command: str):
-            file_path = Path(f"{self.args.path}/download-{command}.sh")
-            with open(file_path, "w+") as f:
-                f.truncate(0)
-            with open(file_path, "a+") as f:
-                f.write(shell_preampble.format(globals()[f"{command}_option"]))
-                for i, (url, name) in enumerate(zip(self.chapter_downloadlinks, self.chapter_titles), 1):
-                    if i in self.exclude_list:
-                        continue
-                    f.write(f'{command} "${{{command.upper()}_OPTS[@]}}" "download/{name}.mp4" "{url}"\n')
+        # Prepare a string of "name|url" pairs for each chapter, skipping excluded chapters
+        # This string will be injected into the shell script template
+        names_urls = ""
+        for i, (url, name) in enumerate(zip(self.chapter_downloadlinks, self.chapter_titles), 1):
+            if i in self.exclude_list:
+                continue
+            names_urls += f'"{name}|{url}"\n    '
 
-            mode = file_path.stat().st_mode
-            file_path.chmod(mode | stat.S_IEXEC | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        # Write the downloader shell script ('download.sh') in the target path
+        # Inject the prepared "name|url" entries into the shell script template
+        file_path = Path(f"{self.args.path}/download.sh")
+        with open(file_path, "w") as f:
+            f.write(shell_script.format(names_urls.rstrip()))
 
-        # Write scripts
-        write_script("download-axel.sh", "axel")
-        write_script("download-wget.sh", "wget")
-        write_script("download-curl.sh", "curl")
+        # Make the shell script executable for all users (owner, group, others)
+        mode = file_path.stat().st_mode
+        file_path.chmod(mode | stat.S_IEXEC | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
     def _saveChapterVideos(self):
         for href in self.chapters_url:
