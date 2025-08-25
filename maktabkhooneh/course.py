@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 
-
 # Standard library imports
 import os
 import re
@@ -12,7 +11,7 @@ import requests
 from bs4 import BeautifulSoup
 from rich import box, print
 from rich.console import Console
-from rich.progress import track
+from rich.progress import Progress
 from rich.table import Table
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
@@ -21,10 +20,6 @@ from selenium.webdriver.support import expected_conditions as EC
 
 # Local application imports
 from maktabkhooneh import shell_preampble_axel
-
-
-
-
 
 
 def clear_screen():
@@ -37,6 +32,7 @@ def clear_screen():
 
 class Course:
     def __init__(self, course_name, user, passwd, args):
+        self.console = Console(log_path=False)
         self.course_name = re.sub("http.*://.*?/.*?/", "", course_name)
         self.course_url = f"https://maktabkhooneh.org/course/{self.course_name}"
         self.user = user
@@ -128,7 +124,7 @@ class Course:
         login_submit.click()
 
     def _tablular(self, data, header=True, reverse=False):
-        Console().print()
+        self.console.print()
         table = Table(show_header=header, header_style="bold", row_styles=["none", "dim"], box=box.DOUBLE)
         if len(data) > 1:
             for col, style, justify in zip(
@@ -150,7 +146,7 @@ class Course:
                     table.add_row(row)
                 else:
                     table.add_row(row)
-        Console().print(table)
+        self.console.log(table)
 
     def _getChapters(self):
         clear_screen()
@@ -167,14 +163,19 @@ class Course:
         self._tablular(self.chapter_titles)
 
     def _getChapterLinks(self):
-        for i in track(range(1, len(self.chapter_urls) + 1), description="Downloading the Lesson(s) ..."):
-            if i in self.exclude_list:
-                continue
-            self.driver.get(self.chapters[i - 1])
-            chapter = self.driver.find_elements(By.LINK_TEXT, "دانلود")[0 if self.args.quality.upper() == "H" else 1]
-            self.chapter_downloadlinks.append(chapter.get_attribute("href"))
-            self._tablular([self.chapter_titles[i - 1]], header=False, reverse=True)
-            Console().print(self.chapter_downloadlinks[-1])
+        with Progress(console=self.console) as progress:
+            task = progress.add_task("Downloading the Lesson(s) ...", total=len(self.chapter_urls) + 1)
+            for i in range(1, len(self.chapter_urls) + 1):
+                if i in self.exclude_list:
+                    continue
+                self.driver.get(self.chapters[i - 1])
+                chapter = self.driver.find_elements(By.LINK_TEXT, "دانلود")[
+                    0 if self.args.quality.upper() == "H" else 1
+                ]
+                self.chapter_downloadlinks.append(chapter.get_attribute("href"))
+                self._tablular([self.chapter_titles[i - 1]], header=False, reverse=True)
+                self.console.log(self.chapter_downloadlinks[-1])
+                progress.update(task, advance=1)
 
     def _saveChapterLinks(self):
         with open(f"{self.args.path}/urls", "w") as f:

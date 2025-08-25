@@ -1,2 +1,7 @@
-@ 2025-08-25 ver 0.6
--- Fixed compatibility issues with the latest Maktabkhooneh website update
+## [0.7] - 2025-08-25
+### Changed
+- Improved progress bar for smoother and clearer updates
+
+## [0.6] - 2025-08-25
+### Fixed
+- Compatibility issues with the latest Maktabkhooneh website update
