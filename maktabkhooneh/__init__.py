@@ -27,18 +27,21 @@ shell_script = textwrap.dedent(
     # -O save with original filename (we'll override with -o when needed)
     # --retry 5 try up to 5 times on transient errors
     CURL_OPTS=(-L -C - --retry 5)      # follow redirects, resume, output file
+    ARIA2C_OPTS=(-x 8 -s 8 -c --console-log-level=warn --summary-interval=0) # 8 connections, resume, quiet
 
     # Ask user for downloader preference
     echo "Choose a downloader:"
     echo "1) axel"
     echo "2) wget"
     echo "3) curl"
-    read -rp "Enter choice [1-3]: " choice
+    echo "4) aria2c"
+    read -rp "Enter choice [1-4]: " choice
 
     case $choice in
         1) DOWNLOADER="axel";   OPTS=("${{AXEL_OPTS[@]}}") ;;
         2) DOWNLOADER="wget";   OPTS=("${{WGET_OPTS[@]}}") ;;
         3) DOWNLOADER="curl";   OPTS=("${{CURL_OPTS[@]}}") ;;
+        4) DOWNLOADER="aria2c"; OPTS=("${{ARIA2C_OPTS[@]}}") ;;
         *) echo "Invalid choice"; exit 1 ;;
     esac
 
@@ -59,6 +62,7 @@ shell_script = textwrap.dedent(
             axel) "$DOWNLOADER" "${{OPTS[@]}}" -o "$out" "$url" ;;
             wget) "$DOWNLOADER" "${{OPTS[@]}}" -O "$out" "$url" ;;
             curl) "$DOWNLOADER" "${{OPTS[@]}}" -o "$out" "$url" ;;
+            aria2c) "$DOWNLOADER" "${{OPTS[@]}}" -o "$out" "$url" ;;
         esac
     done
     """,
