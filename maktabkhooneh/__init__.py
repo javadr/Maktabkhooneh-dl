@@ -53,7 +53,7 @@ shell_script = textwrap.dedent(
     for entry in "${{files[@]}}"; do
         name="${{entry%%|*}}"
         url="${{entry##*|}}"
-        out="download/$name"
+        out="videos/$name.mp4"
 
         case $DOWNLOADER in
             axel) "$DOWNLOADER" "${{OPTS[@]}}" -o "$out" "$url" ;;
