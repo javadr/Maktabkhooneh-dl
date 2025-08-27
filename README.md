@@ -1,4 +1,21 @@
-# Maktabkhooneh Downloader
+# 📥 Maktabkhooneh Downloader
+
+
+## مقدمه
+
+[Maktabkhooneh](https://maktabkhooneh.org) یکی از بزرگ‌ترین پلتفرم‌های MOOC فارسی است که دوره‌های خود را از بهترین دانشگاه‌های ایران، مانند [دانشگاه صنعتی شریف](http://sharif.edu) گردآوری می‌کند.
+
+این پروژه به شما کمک می‌کند تا ویدیوهای دوره‌ها را به صورت **Batch** دانلود کنید.
+برای دسترسی به لینک‌های ویدیو، نیاز به حساب کاربری مکتب‌خونه دارید.
+
+
+
+## ✨ ویژگی‌ها
+
+* **ورژن ۱** – نسخه اصلی بر پایه **Selenium + geckodriver** (پشتیبانی از نسخه‌های قدیمی‌تر سایت)
+* **ورژن ۲** – نسخه بازنویسی شده با **Playwright** (سریع‌تر، پایدارتر، بدون نیاز به geckodriver)
+
+
 
 ## Introduction
 
@@ -9,79 +26,237 @@ Maktabkhooneh has been active since 2011.
 This script helps you batch download videos from Maktabkhooneh courses.  
 To access the video links for any course, you must have a Maktabkhooneh account.
 
----
+
 
 ## Installing Dependencies
 
 Use `pip` to install the required dependencies listed in `requirements.txt`:
 
-```python
+
+## 📦 نصب وابستگی‌ها
+
+### نسخه ۱ (قدیمی - Selenium)
+
+```bash
 pip install -r requirements.txt
 ```
 
-To enable Firefox with Selenium, you also need to install *geckodriver*.
-Geckodriver launches the Firefox browser and supports JavaScript.
+همچنین نیاز دارید **geckodriver** نصب کنید تا Selenium بتواند مرورگر Firefox را کنترل کند.
 
-# Running the script
+---
 
-For a complete and up-to-date list of runtime options, refer to:
+### نسخه ۲ (جدید - Playwright)
+
 ```bash
-maktabkhooneh-dl --help
+pip install -r v2/requirements-v2.txt
+playwright install
 ```
 
-Run the script by providing your Maktabkhooneh account credentials (email and password), the course name, and any additional parameters:
+---
+
+## ▶️ نحوه اجرا
+
+### نسخه ۱ – Selenium
+
+```bash
+python maktabkhooneh-dl.py -u <USERNAME> -p <PASSWORD> <COURSE_SLUG>
+```
+
+مثال:
+
+```bash
+python maktabkhooneh-dl.py -u test@example.com -p 123456 آموزش-رایگان-تحلیل-هوشمند-تصاویر-زیست-پزشکی-mk1070
+```
+
+---
+
+### نسخه ۲ – Playwright
+
+```bash
+python v2/maktabkhone-dl-v2.py -u <USERNAME> -p <PASSWORD> <COURSE_URL>
+```
+
+مثال:
+
+```bash
+python v2/maktabkhone-dl-v2.py -u test@example.com -p 123456 https://maktabkhooneh.org/course/آموزش-کالی-Linux-mk4021
+```
+
+---
+
+## 🛠 گزینه‌ها
+
+| گزینه کوتاه   | گزینه کامل            | توضیح                                                          |
+| ------------- | --------------------- | -------------------------------------------------------------- |
+| `-u USERNAME` | `--username USERNAME` | ایمیل یا شماره موبایلی که با آن وارد مکتب‌خونه می‌شوید         |
+| `-p PASSWORD` | `--password PASSWORD` | رمز عبور                                                       |
+| `-i`          | `--interactive`       | انتخاب تعاملی جلسات برای دانلود                                |
+| `-q QUALITY`  | `--quality QUALITY`   | کیفیت ویدیو (`H` برای کیفیت بالا، `L` برای پایین – پیش‌فرض: H) |
+| -             | `--path PATH`         | مسیر ذخیره‌سازی فایل‌ها (پیش‌فرض: پوشه جاری)                   |
+
+---
+
+## 📂 ساختار پروژه
+
+```
+.
+├── maktabkhooneh           # نسخه ۱ (Selenium)
+│   ├── course.py
+│   ├── __init__.py
+│   ├── maktabkhooneh_dl.py
+│   └── parser.py
+├── maktabkhooneh-dl.py     # اسکریپت اصلی نسخه ۱
+├── README.md
+├── requirements.txt
+└── v2                      # نسخه ۲ (Playwright)
+    ├── maktabkhone-dl-v2.py
+    └── requirements-v2.txt
+```
+
+---
+
+## 💡 نکات
+
+* پیشنهاد می‌شود از **نسخه ۲** استفاده کنید مگر این که نیاز به پشتیبانی از ساختار قدیمی مکتب‌خونه داشته باشید.
+* نسخه ۲ سرعت بالاتر، مدیریت خطای بهتر، و عدم نیاز به نصب geckodriver دارد.
+* قبل از اجرای نسخه ۲ حتماً دستور `playwright install` را اجرا کنید.
+* در صورتی که قالب مکتب خونه اپدیت شده باشد شما در نسخه ۲ کافیست  قسمت سلکتور‌ها و اپدیت کنید یعنی قسمت زیر(لطفا از اپدیت ها ما را نیز مطلع کنید):
+```python
+# -------------------- سلکتور ها --------------------
+# سلکتورها در صفحه دوره 
+CHAPTER_SELECTOR = "div[id^='course-chapter-']" 
+CHAPTER_TITLE_SELECTOR = "div[title^='فصل'] span.text-xl" 
+LESSON_SELECTOR = "a.group[href*='/ویدیو-']"
+LESSON_TITLE_SELECTOR = "div.BaseChapterContentUnitTitle > span[title]"
+# سلکتور دکمه دانلود در صفحه جلسه 
+DOWNLOAD_SELECTOR = ".unit-content--download a[download]"
+# سلکتور دکمه ورود
+LOGIN_BUTTON_SELECTOR = "button#login.button[type='button']"
+
+# -------------------- پایان سلکتور --------------------
+
+```
 
 
+# 📥 Maktabkhooneh Downloader
+
+## Introduction
+
+[Maktabkhooneh](https://maktabkhooneh.org) is one of the largest Persian MOOC platforms, providing courses from top universities in Iran, such as [Sharif University of Technology](http://sharif.edu).
+
+This project helps you **batch download** course videos.
+To access video links, you need a Maktabkhooneh account.
+
+---
+
+## ✨ Features
+
+* **Version 1** – Original version based on **Selenium + geckodriver** (supports the old site structure)
+* **Version 2** – Rewritten version using **Playwright** (faster, more stable, no geckodriver required)
+
+---
+
+## 📦 Installing Dependencies
+
+### Version 1 (Old – Selenium)
+
+```bash
+pip install -r requirements.txt
+```
+
+
+You also need **geckodriver** installed so that Selenium can control the Firefox browser.
+
+---
+
+### Version 2 (New – Playwright)
+
+```bash
+pip install -r v2/requirements-v2.txt
+playwright install
+```
+
+---
+
+## ▶️ How to Run
+
+### Version 1 – Selenium
+
+```bash
+python maktabkhooneh-dl.py -u <USERNAME> -p <PASSWORD> <COURSE_SLUG>
+```
+
+Example:
+
+```bash
+python maktabkhooneh-dl.py -u test@example.com -p 123456 آموزش-رایگان-تحلیل-هوشمند-تصاویر-زیست-پزشکی-mk1070
+```
+
+---
+
+### Version 2 – Playwright
+
+```bash
+python v2/maktabkhone-dl-v2.py -u <USERNAME> -p <PASSWORD> <COURSE_URL>
+```
+
+Example:
+
+```bash
+python v2/maktabkhone-dl-v2.py -u test@example.com -p 123456 https://maktabkhooneh.org/course/آموزش-کالی-Linux-mk4021
+```
+
+---
+
+## 🛠 Options
+
+| Short form    | Long form             | Description                                            |
+| ------------- | --------------------- | ------------------------------------------------------ |
+| `-u USERNAME` | `--username USERNAME` | Email or phone number used to log in to Maktabkhooneh  |
+| `-p PASSWORD` | `--password PASSWORD` | Password                                               |
+| `-i`          | `--interactive`       | Interactively choose which lessons to download         |
+| `-q QUALITY`  | `--quality QUALITY`   | Video quality (`H` for high, `L` for low – default: H) |
+| -             | `--path PATH`         | Path to save the files (default: current directory)    |
+
+---
+
+## 📂 Project Structure
+
+```
+.
+├── maktabkhooneh           # Version 1 (Selenium)
+│   ├── course.py
+│   ├── __init__.py
+│   ├── maktabkhooneh_dl.py
+│   └── parser.py
+├── maktabkhooneh-dl.py     # Main script for version 1
+├── README.md
+├── requirements.txt
+└── v2                      # Version 2 (Playwright)
+    ├── maktabkhone-dl-v2.py
+    └── requirements-v2.txt
+```
+
+---
+
+## 💡 Notes
+
+* It’s recommended to use **Version 2**, unless you specifically need to support the old Maktabkhooneh structure.
+* Version 2 offers higher speed, better error handling, and no need to install geckodriver.
+* Before running Version 2, make sure you have executed `playwright install`.
+* If Maktabkhooneh updates its UI, you may need to update the selectors in Version 2. Example:
 
 ```python
-python maktabkhooneh-dl.py -u <user> -p <pass> آموزش-رایگان-تحلیل-هوشمند-تصاویر-زیست-پزشکی-mk1070
+# -------------------- Selectors --------------------
+# Course page selectors
+CHAPTER_SELECTOR = "div[id^='course-chapter-']" 
+CHAPTER_TITLE_SELECTOR = "div[title^='فصل'] span.text-xl" 
+LESSON_SELECTOR = "a.group[href*='/ویدیو-']"
+LESSON_TITLE_SELECTOR = "div.BaseChapterContentUnitTitle > span[title]"
+# Download button on lesson page
+DOWNLOAD_SELECTOR = ".unit-content--download a[download]"
+# Login button
+LOGIN_BUTTON_SELECTOR = "button#login.button[type='button']"
+
+# -------------------- End of selectors --------------------
 ```
-
-> **CAVEAT**: Due to a recent update, downloading course materials from Maktabkhooneh now requires prior registration for the course.
-
-```
-
-╔═══════════════════════════════════════════════════════════════════════════════════════════╦════════╗
-║                                                                               Description ║ Lesson ║
-╠═══════════════════════════════════════════════════════════════════════════════════════════╬════════╣
-║                                         جلسه 1: مقدمات درس تحلیل هوشمند تصاویر زیست پزشکی ║   1    ║
-║                                                              جلسه 2: پردازش تصویر مقدماتی ║   2    ║
-║                                    جلسه 3: مباحث نظری سیستمهای خطی، فیلترها و تبدیل فوریه ║   3    ║
-║                                               جلسه 4: ادامه تبدیل فوریه - استاندارد DICOM ║   4    ║
-║                                              جلسه 5: آشنایی با تصویربرداری مبتنی بر X-Ray ║   5    ║
-║                                                          جلسه 6: آشنایی با تصویربرداری CT ║   6    ║
-║                                                         جلسه 7: آشنایی با تصویربرداری MRI ║   7    ║
-║                                                         جلسه 8: آشنایی با تصویربرداری PET ║   8    ║
-║                         جلسه 9: دو کاربرد از تصاویر MRI، آشنایی با تصویربرداری Ultrasound ║   9    ║
-║                  جلسه 10: آشنایی با میکروسکوپهای Phase-Contrast، Dark Field، Bright Field ║   10   ║
-║                                   جلسه 11: آشنایی با میکروسکوپهای Fluorescence و Confocal ║   11   ║
-║                               جلسه 12: آشنایی با میکروسکوپهای Super-Resolution و الکترونی ║   12   ║
-║                                                           جلسه 13: آشنایی با CellProfiler ║   13   ║
-║                                                    جلسه 14: Image Registration (قسمت اول) ║   14   ║
-║                                                    جلسه 15: Image Registration (قسمت دوم) ║   15   ║
-║                                                    جلسه 16: Image Registration (قسمت سوم) ║   16   ║
-║                                                  جلسه 17: Image Registration (قسمت چهارم) ║   17   ║
-║                                                   جلسه 18: Image Registration (قسمت پنجم) ║   18   ║
-║                                                                   جلسه 19: قطعهبندی تصویر ║   19   ║
-║                                جلسه 20: قطعهبندی تصاویر با شبکههای U-Net (ارائه دانشجویی) ║   20   ║
-║                           جلسه 21: ادامه قطعهبندی و تشخیص در تصاویر RCNN (ارائه دانشجویی) ║   21   ║
-║                                  جلسه 22: ادامه قطعهبندی و روش Deep k-NN (ارائه دانشجویی) ║   22   ║
-║                           جلسه 23: تشخیص بیماری COVID-19 در تصاویر X-Ray (ارائه دانشجویی) ║   23   ║
-║     جلسه 24: مباحث Bone Age Estimation و Knee Magnetic Resonance Imaging (ارائه دانشجویی) ║   24   ║
-║               جلسه 25: مباحث Pneumonia Detection و Skin Cancer Detection (ارائه دانشجویی) ║   25   ║
-║                                             جلسه 26: دستهبندی تصاویر MRI (ارائه دانشجویی) ║   26   ║
-║ جلسه 27: روش CE-Net برای قطعهبندی و همینطور قطعهبندی تومور در تصاویر MRI (ارائه دانشجویی) ║   27   ║
-║                                          جلسه 28: سنجههای توانبالای میکروسکوپی (قسمت اول) ║   28   ║
-║                                          جلسه 29: سنجههای توانبالای میکروسکوپی (قسمت دوم) ║   29   ║
-╚═══════════════════════════════════════════════════════════════════════════════════════════╩════════╝
-Be Patient ...
-```
-
-## Options 
-|short from |long form | description|
-|---|---|---|
-|`-u USERNAME`| `--username USERNAME` | username (email/tel) that you use to login to Maktabkhooneh|
-|`-p PASSWORD` | `--password PASSWORD` |maktabkhooneh password |
-| `-i` |`--interactive` | Interactively asks the user which lesson(s) to download|
-| `-q QUALITY` |`--quality QUALITY`| Downloading quality of the lesson(s); H for high quality and L for low quality video (Default: H)|
-|| `--path PATH` | Path to where to save the file. (Default: current directory)|
