@@ -1,0 +1,15 @@
+## [0.9] - 2025-08-26
+### Changed
+- Unified downloader into a **single script** with user-selectable options for **wget**, **curl**, **axel**, and **aria2c**.
+
+## [0.8] - 2025-08-26
+### Added
+- Introduced separate downloader scripts for **wget**, **curl**, and **axel**.
+
+## [0.7] - 2025-08-25
+### Changed
+- Improved progress bar for smoother and clearer updates
+
+## [0.6] - 2025-08-25
+### Fixed
+- Compatibility issues with the latest Maktabkhooneh website update

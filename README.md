@@ -1,5 +1,6 @@
 # 📥 Maktabkhooneh Downloader
 
+
 ## مقدمه
 
 [Maktabkhooneh](https://maktabkhooneh.org) یکی از بزرگ‌ترین پلتفرم‌های MOOC فارسی است که دوره‌های خود را از بهترین دانشگاه‌های ایران، مانند [دانشگاه صنعتی شریف](http://sharif.edu) گردآوری می‌کند.
@@ -7,14 +8,30 @@
 این پروژه به شما کمک می‌کند تا ویدیوهای دوره‌ها را به صورت **Batch** دانلود کنید.
 برای دسترسی به لینک‌های ویدیو، نیاز به حساب کاربری مکتب‌خونه دارید.
 
----
+
 
 ## ✨ ویژگی‌ها
 
 * **ورژن ۱** – نسخه اصلی بر پایه **Selenium + geckodriver** (پشتیبانی از نسخه‌های قدیمی‌تر سایت)
 * **ورژن ۲** – نسخه بازنویسی شده با **Playwright** (سریع‌تر، پایدارتر، بدون نیاز به geckodriver)
 
----
+
+
+## Introduction
+
+[Maktabkhooneh](http://maktabkhooneh.org) provides *massive open online courses* (MOOCs) for Persian users, 
+offering classes from top universities in Iran such as [Sharif University of Technology](http://sharif.edu). 
+Maktabkhooneh has been active since 2011.
+
+This script helps you batch download videos from Maktabkhooneh courses.  
+To access the video links for any course, you must have a Maktabkhooneh account.
+
+
+
+## Installing Dependencies
+
+Use `pip` to install the required dependencies listed in `requirements.txt`:
+
 
 ## 📦 نصب وابستگی‌ها
 
@@ -147,6 +164,7 @@ To access video links, you need a Maktabkhooneh account.
 pip install -r requirements.txt
 ```
 
+
 You also need **geckodriver** installed so that Selenium can control the Firefox browser.
 
 ---
@@ -242,4 +260,3 @@ LOGIN_BUTTON_SELECTOR = "button#login.button[type='button']"
 
 # -------------------- End of selectors --------------------
 ```
-
