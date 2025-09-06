@@ -1,6 +1,10 @@
-from pathlib import Path
-import re
+#!/usr/bin/env python3
 
+# Standard library imports
+import re
+from pathlib import Path
+
+# Third-party imports
 from playwright.sync_api import sync_playwright
 
 # ----------------- settings -----------------

@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 
+# Standard library imports
 import sys
 
+# Third-party imports
+from rich import print
+from selenium.common import exceptions
+
+# Local application imports
 from .course import Course
 from .parser import parse_args
-from selenium.common import exceptions
 
 
 def main():
