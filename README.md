@@ -39,7 +39,7 @@ python maktabkhooneh-dl.py -u <user> -p <pass> آموزش-رایگان-تحلی�
 
 > **CAVEAT**: Due to a recent update, downloading course materials from Maktabkhooneh now requires prior registration for the course.
 
-```
+```bash
 
 ╔═══════════════════════════════════════════════════════════════════════════════════════════╦════════╗
 ║                                                                               Description ║ Lesson ║
