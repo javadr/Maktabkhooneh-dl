@@ -85,3 +85,9 @@ Be Patient ...
 | `-i` |`--interactive` | Interactively asks the user which lesson(s) to download|
 | `-q QUALITY` |`--quality QUALITY`| Downloading quality of the lesson(s); H for high quality and L for low quality video (Default: H)|
 || `--path PATH` | Path to where to save the file. (Default: current directory)|
+
+
+## Version 2 (Playwright-based)
+
+Version 2 has been implemented to work with [Playwright](https://playwright.dev/).
+All details, usage instructions, and notes related to this version can be found in the separate README-v2.md file.
