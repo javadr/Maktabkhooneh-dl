@@ -1,11 +1,51 @@
 #!/usr/bin/env python3
 
-import configargparse as argparse
-from pathlib import Path
-from maktabkhooneh import __version__
+
+# Standard library imports
+import re
 import sys
+from dataclasses import dataclass, field
+from pathlib import Path
+
+# Third-party imports
+import configargparse as argparse
+
+# Local application imports
+from maktabkhooneh import __version__
+
 
 LOCAL_CONF_FILE_NAME = "maktabkhooneh-dl.conf"
+
+
+@dataclass
+class CourseConfig:
+    class_name: str
+    username: str
+    password: str
+
+    # Derived fields initialized in __post_init__
+    course_name: str = field(init=False)
+    course_url: str = field(init=False)
+
+    # runtime state – initially empty, filled later
+    chapter_urls: list[str] = field(default_factory=list)  # url for each chapters
+    chapter_titles: list[str] = field(default_factory=list)  # title of each chapters
+    chapter_downloadlinks: list[str] = field(default_factory=list)  # download link of the chapter's video
+    exclude_list: set = field(default_factory=set)  # saves the list of lessons to be included
+
+    def __post_init__(self):
+        self.course_name = re.sub(r"http.*://.*?/.*?/", "", self.class_name)
+        self.course_url = f"https://maktabkhooneh.org/course/{self.course_name}"
+
+
+@dataclass
+class DownloaderConfig:
+    interactive: bool
+    quality: str
+    path: str
+    axel: str | None
+    downloader_arguments: list[str]
+    overwrite: bool
 
 
 def parse_args(args=None):
@@ -111,4 +151,15 @@ def parse_args(args=None):
     # turn list of strings into list
     args.downloader_arguments = args.downloader_arguments.split()
 
-    return args
+    return CourseConfig(
+        class_name=args.class_name,
+        username=args.username,
+        password=args.password,
+    ), DownloaderConfig(
+        interactive=args.interactive,
+        quality=args.quality,
+        path=args.path,
+        axel=args.axel,
+        downloader_arguments=args.downloader_arguments,
+        overwrite=args.overwrite,
+    )

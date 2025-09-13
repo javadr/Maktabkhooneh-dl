@@ -14,18 +14,13 @@ from .parser import parse_args
 
 def main():
     """Main entry point for execution."""
-    args = parse_args()
+    course_args, downloader_args = parse_args()
 
     # login(session, args.username, args.password)
-    course = Course(
-        args.class_name,
-        args.username,
-        args.password,
-        args,
-    )
+    course = Course(course_args, downloader_args)
 
     try:
-        _ = course.extract()
+        course.extract()
     except exceptions.WebDriverException as exp:
         print(exp.msg)
         sys.exit(1)

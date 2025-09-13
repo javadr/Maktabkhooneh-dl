@@ -1,3 +1,11 @@
+## [1.0] - 2025-09-12
+### Added
+- Introduced `dataclass` structures for **course** and **downloader configuration** to simplify data handling.
+
+### Changed
+- Enhanced table rendering with a **live streaming display** for real-time row updates.
+
+
 ## [0.9] - 2025-08-26
 ### Changed
 - Unified downloader into a **single script** with user-selectable options for **wget**, **curl**, **axel**, and **aria2c**.
